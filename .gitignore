@@ -1,0 +1,28 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+
+# Docker
+*.dockerfile
+docker-compose.yml
+
+# Kubernetes
+*.yaml
+*.yml
+
+# Kind configuration
+kind-config.yaml
+
+# MacOS
+.DS_Store
+
+# VSCode
+.vscode/
