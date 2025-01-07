@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-k8s-app
+  labels:
+    app: express-k8s-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: express-k8s-app
+  template:
+    metadata:
+      labels:
+        app: express-k8s-app
+    spec:
+      containers:
+        - name: express-k8s-app
+          image: linikerdev/express-k8s-app
+          ports:
+            - containerPort: 3000
+              name: http

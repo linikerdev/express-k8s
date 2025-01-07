@@ -7,22 +7,9 @@ yarn-error.log
 logs/
 *.log
 
-# Environment variables
-.env
-
-# Docker
-*.dockerfile
-docker-compose.yml
-
-# Kubernetes
-*.yaml
-*.yml
-
-# Kind configuration
-kind-config.yaml
-
 # MacOS
 .DS_Store
 
 # VSCode
 .vscode/
+.idea
