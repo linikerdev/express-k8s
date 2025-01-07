@@ -128,7 +128,69 @@ Para implantar a aplicação em um cluster Kubernetes, siga os passos abaixo:
     ```sh
     kubectl apply -f manifest.api.yaml
     ```
+### Adicionando o MongoDB ao cluster
 
+    1. Crie um arquivo de manifest para o MongoDB:
+
+      ```yaml
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: mongo
+        labels:
+        app: mongo
+      spec:
+        replicas: 1
+        selector:
+        matchLabels:
+          app: mongo
+        template:
+        metadata:
+          labels:
+          app: mongo
+        spec:
+          containers:
+          - name: mongo
+            image: mongo:4.4.6
+            ports:
+            - containerPort: 27017
+              name: mongo
+            resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+          volumes:
+          - name: mongo-storage
+            emptyDir: {}
+
+      ---
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: mongo
+        labels:
+        app: mongo
+      spec:
+        selector:
+        app: mongo
+        ports:
+        - protocol: TCP
+          name: mongo
+          port: 27017
+          targetPort: 27017
+      ```
+
+    2. Aplique o deployment do MongoDB no cluster:
+
+      ```sh
+      kubectl apply -f manifest.mongo.yaml
+      ```
 ## Contribuição
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
