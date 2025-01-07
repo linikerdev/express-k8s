@@ -13,16 +13,16 @@ Este projeto é uma aplicação Node.js utilizando o framework Express, preparad
 
 1. Clone o repositório:
 
-    ```sh
-    git clone https://github.com/seu-usuario/express-k8s.git
-    cd express-k8s
-    ```
+  ```sh
+  git clone https://github.com/seu-usuario/express-k8s.git
+  cd express-k8s
+  ```
 
 2. Instale as dependências:
 
-    ```sh
-    npm install
-    ```
+  ```sh
+  npm install
+  ```
 
 ## Executando a aplicação localmente
 
@@ -69,59 +69,64 @@ Para implantar a aplicação em um cluster Kubernetes, siga os passos abaixo:
     kind create cluster --config kind-config.yaml
     ```
 
-### Implantando a aplicação
+### Implantando a aplicação e o serviço
 
-1. Crie um arquivo de deployment:
+1. Crie um arquivo de manifest:
 
     ```yaml
     apiVersion: apps/v1
     kind: Deployment
     metadata:
-      name: express-k8s
+      name: express-k8s-app
+      labels:
+        app: express-k8s-app
     spec:
-      replicas: 2
+      replicas: 1
       selector:
-         matchLabels:
-            app: express-k8s
+        matchLabels:
+          app: express-k8s-app
       template:
-         metadata:
-            labels:
-              app: express-k8s
-         spec:
-            containers:
-            - name: express-k8s
-              image: express-k8s:latest
+        metadata:
+          labels:
+            app: express-k8s-app
+        spec:
+          containers:
+            - name: express-k8s-app
+              image: linikerdev/express-k8s-app
               ports:
-              - containerPort: 3000
+                - containerPort: 3000
+                  name: http
+              resources:
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+                requests:
+                  memory: "256Mi"
+                  cpu: "250m"
+
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: express-svc
+      labels:
+        app: express-k8s-app
+    spec:
+      selector:
+        app: express-k8s-app
+      ports:
+        - protocol: TCP
+          name: http
+          port: 3000
+          targetPort: http
+          nodePort: 30000
+      type: NodePort
     ```
 
 2. Aplique o deployment no cluster:
 
     ```sh
-    kubectl apply -f deployment.yaml
-    ```
-
-3. Exponha a aplicação com um serviço:
-
-    ```yaml
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: express-k8s-service
-    spec:
-      selector:
-         app: express-k8s
-      ports:
-         - protocol: TCP
-            port: 80
-            targetPort: 3000
-      type: LoadBalancer
-    ```
-
-4. Aplique o serviço no cluster:
-
-    ```sh
-    kubectl apply -f service.yaml
+    kubectl apply -f manifest.api.yaml
     ```
 
 ## Contribuição
